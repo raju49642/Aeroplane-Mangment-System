@@ -1,0 +1,7 @@
+package com.ams.dto;
+import java.time.*; import java.util.Set;
+public class FlightScheduleTemplateResponse {
+ private Integer scheduleTemplateId; private Integer flightId; private String flightNumber; private String carrierName; private LocalTime departureTime; private LocalTime arrivalTime; private Set<DayOfWeek> operatingDays; private LocalDate effectiveFrom; private LocalDate effectiveTo; private boolean active;
+ public Integer getScheduleTemplateId(){return scheduleTemplateId;} public void setScheduleTemplateId(Integer v){scheduleTemplateId=v;} public Integer getFlightId(){return flightId;} public void setFlightId(Integer v){flightId=v;} public LocalTime getDepartureTime(){return departureTime;} public void setDepartureTime(LocalTime v){departureTime=v;} public LocalTime getArrivalTime(){return arrivalTime;} public void setArrivalTime(LocalTime v){arrivalTime=v;} public Set<DayOfWeek> getOperatingDays(){return operatingDays;} public void setOperatingDays(Set<DayOfWeek> v){operatingDays=v;} public LocalDate getEffectiveFrom(){return effectiveFrom;} public void setEffectiveFrom(LocalDate v){effectiveFrom=v;} public LocalDate getEffectiveTo(){return effectiveTo;} public void setEffectiveTo(LocalDate v){effectiveTo=v;} public boolean isActive(){return active;} public void setActive(boolean v){active=v;}
+ public String getFlightNumber(){return flightNumber;} public void setFlightNumber(String v){flightNumber=v;} public String getCarrierName(){return carrierName;} public void setCarrierName(String v){carrierName=v;}
+}

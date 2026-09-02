@@ -1,0 +1,16 @@
+package com.ams.service.impl;
+import com.ams.dto.*; import com.ams.entity.*; import com.ams.exception.*; import com.ams.repository.*; import com.ams.service.PaymentService;
+import org.springframework.security.core.context.SecurityContextHolder; import org.springframework.stereotype.Service; import org.springframework.transaction.annotation.Transactional;
+import java.time.*; import java.util.*;
+@Service public class PaymentServiceImpl implements PaymentService {
+ private static final Map<String,Double> FEES=Map.of("SILVER",499.0,"GOLD",999.0,"PLATINUM",1999.0);
+ private final PaymentRepository payments; private final UserRepository users;
+ public PaymentServiceImpl(PaymentRepository payments, UserRepository users){this.payments=payments;this.users=users;}
+ @Transactional public PaymentResponse pay(MembershipPaymentRequest r){ User user=current(); validate(r); Payment p=new Payment(); p.setUser(user);p.setCustomerCategory(r.getCustomerCategory());p.setAmount(FEES.get(r.getCustomerCategory()));p.setPaymentMethod(r.getPaymentMethod()); if("UPI".equals(r.getPaymentMethod())) {p.setStatus("PENDING");p.setUpiTransactionRef("AMS"+UUID.randomUUID().toString().replace("-","").substring(0,12).toUpperCase());p=payments.save(p);return response(p, "upi://pay?pa=ams@mockbank&am="+p.getAmount()+"&tn="+p.getUpiTransactionRef());} p.setMaskedCardNumber("**** **** **** "+r.getCardNumber().substring(r.getCardNumber().length()-4)); return complete(p); }
+ @Transactional public PaymentResponse confirmUpi(Integer id){Payment p=payments.findById(id).orElseThrow(()->new ResourceNotFoundException("Payment not found"));if(!p.getUser().getUserId().equals(current().getUserId()))throw new InvalidBookingException("Payment does not belong to the authenticated user");if(!"PENDING".equals(p.getStatus()))throw new InvalidBookingException("Payment is already finalized");return complete(p);}
+ @Transactional(readOnly=true) public List<PaymentResponse> getMyPayments(){return payments.findByUserUserIdOrderByPaidAtDesc(current().getUserId()).stream().map(p->response(p,null)).toList();}
+ private PaymentResponse complete(Payment p){p.setStatus("SUCCESS");p.setPaidAt(LocalDateTime.now());p.getUser().setCustomerCategory(p.getCustomerCategory());payments.save(p);return response(p,null);}
+ private User current(){String name=SecurityContextHolder.getContext().getAuthentication().getName();return users.findByUserName(name).orElseThrow(()->new ResourceNotFoundException("Authenticated user not found"));}
+ private void validate(MembershipPaymentRequest r){if("CREDIT_CARD".equals(r.getPaymentMethod())){if(r.getCardNumber()==null||r.getCardHolderName()==null||r.getCardHolderName().isBlank()||r.getExpiryMonth()==null||r.getExpiryYear()==null||r.getCvv()==null)throw new InvalidBookingException("Complete credit card details are required");if(r.getExpiryMonth()<1||r.getExpiryMonth()>12||YearMonth.of(r.getExpiryYear(),r.getExpiryMonth()).isBefore(YearMonth.now()))throw new InvalidBookingException("Card expiry date is invalid or in the past");}}
+ private PaymentResponse response(Payment p,String qr){return new PaymentResponse(p.getPaymentId(),p.getCustomerCategory(),p.getAmount(),p.getPaymentMethod(),p.getMaskedCardNumber(),p.getUpiTransactionRef(),p.getStatus(),p.getPaidAt(),qr);}
+}
