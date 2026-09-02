@@ -1,9 +1,0 @@
-com\ams\service\AuthServiceImplTest.class
-com\ams\service\CarrierServiceImplTest.class
-com\ams\service\SuperAdminWorkflowTest.class
-com\ams\service\TestSecurityUtil.class
-com\ams\service\UserServiceImplTest.class
-com\ams\dto\RegisterUserRequestValidationTest.class
-com\ams\service\BookingServiceImplTest.class
-com\ams\util\AirportNormalizerTest.class
-com\ams\service\FlightServiceImplTest.class
