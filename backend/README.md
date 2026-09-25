@@ -1,6 +1,6 @@
 # AMS Backend — Airline Management System
 
-Spring Boot 3 (Java 17) REST API implementing a realistic airline booking system: JWT auth,
+Spring Boot 3 (Java 25) REST API implementing a realistic airline booking system: JWT auth,
 
 ## Pricing, payments, and recovery
 
@@ -10,7 +10,7 @@ a Super Admin / Admin-approval workflow, real database-backed flight search agai
 
 ## 1. Technology Stack
 
-- Java 17, Spring Boot 3.3.4, Maven
+- Java 25 runtime with Java 21-compatible bytecode, Spring Boot 3.3.4, Maven
 - Spring Web, Spring Data JPA, Spring Validation, Spring Security
 - JWT (jjwt) for stateless authentication
 - MySQL (runtime), H2 (tests)
